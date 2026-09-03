@@ -2,9 +2,9 @@ import Card from "../components/Card";
 import { atalhosHome } from "../data/dados";
 
 const etapas = [
-  { id: 1, nome: "Front-end com React", situacao: "Etapa atual" },
-  { id: 2, nome: "Back-end com Node e Express", situacao: "A seguir" },
-  { id: 3, nome: "Integração e banco de dados", situacao: "A seguir" },
+  { id: 1, nome: "Front-end com React", situacao: "Concluída" },
+  { id: 2, nome: "Back-end com Node e Express", situacao: "Concluída" },
+  { id: 3, nome: "Integração e banco de dados", situacao: "Etapa atual" },
 ];
 
 function Home() {
@@ -17,8 +17,8 @@ function Home() {
         <p className="destaque-texto">
           O Portal DSM organiza as disciplinas, a equipe e os contatos do 4º
           semestre de Desenvolvimento de Software Multiplataforma da Fatec
-          Matão. Esta é a etapa de front-end do projeto, construída com React,
-          Vite e React Router.
+          Matão. A interface é construída com React, Vite e React Router, e os
+          dados vêm de uma API em Node.js com Express sobre MySQL.
         </p>
       </section>
 
@@ -28,7 +28,7 @@ function Home() {
           {etapas.map((etapa) => (
             <li
               key={etapa.id}
-              className={etapa.id === 1 ? "etapa etapa-atual" : "etapa"}
+              className={etapa.id === 3 ? "etapa etapa-atual" : "etapa"}
             >
               <span className="etapa-numero">{etapa.id}</span>
               <span className="etapa-nome">{etapa.nome}</span>
