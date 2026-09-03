@@ -76,6 +76,13 @@ code {
   flex: 1;
 }
 
+/* Páginas de formulário ficam em coluna estreita */
+.container-estreito {
+  max-width: 760px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .container {
   width: var(--largura);
   margin: 0 auto;
@@ -164,7 +171,35 @@ code {
   width: var(--largura);
   margin: 0 auto;
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.menu-links {
+  display: flex;
   gap: 28px;
+}
+
+.menu-usuario {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.menu-nome {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: right;
+}
+
+.menu-papel {
+  font-weight: 400;
+  font-size: 13px;
+  color: var(--tinta-suave);
 }
 
 .menu-item {
@@ -500,6 +535,189 @@ code {
   color: #8f8683;
 }
 
+
+/* ---------- Avisos ---------- */
+
+.aviso {
+  margin: 0 0 24px;
+  padding: 14px 18px;
+  border-radius: var(--raio);
+  background: var(--superficie);
+  border: 1px solid var(--linha);
+  color: var(--tinta-suave);
+}
+
+.aviso-erro {
+  border-color: var(--vinho);
+  color: var(--vinho-escuro);
+}
+
+.aviso-ok {
+  border-color: var(--area-mobile);
+  color: #14584a;
+}
+
+/* ---------- Abas do gerenciamento ---------- */
+
+.abas {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 28px;
+  border-bottom: 1px solid var(--linha);
+}
+
+.aba {
+  padding: 10px 16px;
+  color: var(--tinta-suave);
+  text-decoration: none;
+  font-weight: 500;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -1px;
+}
+
+.aba:hover {
+  color: var(--vinho);
+}
+
+.aba-ativa {
+  color: var(--vinho);
+  border-bottom-color: var(--vinho);
+}
+
+/* ---------- Formulário ---------- */
+
+.formulario {
+  background: var(--superficie);
+  border: 1px solid var(--linha);
+  border-radius: var(--raio);
+  padding: 24px;
+  margin-bottom: 52px;
+}
+
+.formulario .secao-titulo {
+  margin-top: 0;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.campo label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--tinta-suave);
+}
+
+.campo input,
+.campo select,
+.campo textarea {
+  font-family: inherit;
+  font-size: 16px;
+  color: var(--tinta);
+  padding: 10px 12px;
+  border: 1px solid var(--linha);
+  border-radius: 6px;
+  background: var(--fundo);
+}
+
+.campo textarea {
+  resize: vertical;
+}
+
+.campo input:focus,
+.campo select:focus,
+.campo textarea:focus {
+  border-color: var(--vinho);
+}
+
+.campo-ajuda {
+  font-size: 13px;
+  color: var(--tinta-suave);
+}
+
+.campo-duplo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.acoes {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+button.botao {
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 16px;
+}
+
+button.botao:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.botao-secundario {
+  background: transparent;
+  color: var(--tinta-suave);
+  border: 1px solid var(--linha);
+}
+
+.botao-secundario:hover {
+  background: var(--fundo);
+  color: var(--tinta);
+}
+
+.botao-texto {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--vinho);
+  padding: 6px 4px;
+}
+
+.botao-texto:hover {
+  text-decoration: underline;
+}
+
+.botao-perigo {
+  color: var(--tinta-suave);
+}
+
+/* ---------- Lista de registros ---------- */
+
+.linha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--linha);
+}
+
+.linha:last-child {
+  border-bottom: none;
+}
+
+.linha-nome {
+  margin: 0;
+  font-weight: 500;
+}
+
+.linha-meta {
+  margin: 2px 0 0;
+  font-size: 14px;
+  color: var(--tinta-suave);
+}
+
 /* ==========================================================
    Responsividade
    ========================================================== */
@@ -537,8 +755,19 @@ code {
   }
 
   .menu-interno {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 0;
+  }
+
+  .menu-links {
     flex-wrap: wrap;
     gap: 18px;
+  }
+
+  .menu-nome {
+    text-align: left;
   }
 
   .menu-item {
@@ -559,9 +788,20 @@ code {
   }
 
   .info-item,
-  .lista-definicao > div {
+  .lista-definicao > div,
+  .campo-duplo {
     grid-template-columns: 1fr;
     gap: 4px;
+  }
+
+  .campo-duplo {
+    gap: 0;
+  }
+
+  .linha {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
   }
 }
 
