@@ -629,6 +629,41 @@ code {
   border-color: var(--vinho);
 }
 
+.campo-senha {
+  position: relative;
+  display: flex;
+}
+
+.campo-senha input {
+  flex: 1;
+  padding-right: 46px;
+}
+
+.campo-senha-botao {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--tinta-suave);
+}
+
+.campo-senha-botao:hover {
+  color: var(--vinho);
+  background: var(--fundo);
+}
+
+.campo-senha-botao[aria-pressed="true"] {
+  color: var(--vinho);
+}
+
 .campo-ajuda {
   font-size: 13px;
   color: var(--tinta-suave);

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
 import useAuth from "../hooks/useAuth";
+import CampoSenha from "../components/CampoSenha";
 
 function Entrar() {
   const [email, setEmail] = useState("");
@@ -12,7 +13,6 @@ function Entrar() {
   const navegar = useNavigate();
   const local = useLocation();
 
-  // Volta para a página que o usuário tentou abrir antes do login
   const destino = local.state?.de ?? "/";
 
   async function enviar(evento) {
@@ -51,16 +51,10 @@ function Entrar() {
           />
         </div>
 
-        <div className="campo">
-          <label htmlFor="senha">Senha</label>
-          <input
-            id="senha"
-            type="password"
-            autoComplete="current-password"
-            value={senha}
-            onChange={(e) => setSenha(e.target.value)}
-          />
-        </div>
+        <CampoSenha
+          valor={senha}
+          aoAlterar={(evento) => setSenha(evento.target.value)}
+        />
 
         <div className="acoes">
           <button className="botao" type="submit" disabled={enviando}>

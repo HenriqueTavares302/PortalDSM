@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import useAuth from "../hooks/useAuth";
+import CampoSenha from "../components/CampoSenha";
 
 const perfis = [
   { valor: "aluno", rotulo: "Aluno" },
@@ -24,7 +25,6 @@ function Cadastrar() {
   const { registrar } = useAuth();
   const navegar = useNavigate();
 
-  // Aluno entra direto; os outros perfis exigem o código guardado no servidor
   const exigeCodigo = formulario.papel !== "aluno";
 
   function alterarCampo(evento) {
@@ -82,18 +82,12 @@ function Cadastrar() {
           />
         </div>
 
-        <div className="campo">
-          <label htmlFor="senha">Senha</label>
-          <input
-            id="senha"
-            name="senha"
-            type="password"
-            autoComplete="new-password"
-            value={formulario.senha}
-            onChange={alterarCampo}
-          />
-          <span className="campo-ajuda">Pelo menos 8 caracteres.</span>
-        </div>
+        <CampoSenha
+          valor={formulario.senha}
+          aoAlterar={alterarCampo}
+          autoComplete="new-password"
+          ajuda="Pelo menos 8 caracteres."
+        />
 
         <div className="campo">
           <label htmlFor="papel">Perfil</label>
