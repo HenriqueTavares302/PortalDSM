@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import MenuGerenciar from "../components/MenuGerenciar";
+import Confirmacao from "../components/Confirmacao";
 import useAuth from "../hooks/useAuth";
 import {
   listarDisciplinas,
@@ -29,11 +30,10 @@ function Gerenciar() {
   const [editandoId, setEditandoId] = useState(null);
   const [carregando, setCarregando] = useState(true);
   const [mensagem, setMensagem] = useState(null);
+  const [paraApagar, setParaApagar] = useState(null);
 
-  // Coordenador cria e edita, mas não apaga
   const { podeApagar } = useAuth();
 
-  // Carga inicial da lista
   useEffect(() => {
     listarDisciplinas()
       .then((dados) => setDisciplinas(dados))
@@ -41,7 +41,6 @@ function Gerenciar() {
       .finally(() => setCarregando(false));
   }, []);
 
-  // Recarrega a lista depois de cadastrar, editar ou apagar
   async function carregar() {
     const dados = await listarDisciplinas();
     setDisciplinas(dados);
@@ -98,11 +97,11 @@ function Gerenciar() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  async function apagar(disciplina) {
-    const confirmou = window.confirm(`Apagar "${disciplina.nome}"?`);
-    if (!confirmou) return;
-
+  async function apagar() {
+    const disciplina = paraApagar;
+    setParaApagar(null);
     setMensagem(null);
+
     try {
       await removerDisciplina(disciplina.id);
       setMensagem({ tipo: "ok", texto: "Disciplina removida." });
@@ -124,7 +123,11 @@ function Gerenciar() {
       </p>
 
       {mensagem ? (
-        <p className={mensagem.tipo === "erro" ? "aviso aviso-erro" : "aviso aviso-ok"}>
+        <p
+          className={
+            mensagem.tipo === "erro" ? "aviso aviso-erro" : "aviso aviso-ok"
+          }
+        >
           {mensagem.texto}
         </p>
       ) : null}
@@ -148,7 +151,12 @@ function Gerenciar() {
         <div className="campo-duplo">
           <div className="campo">
             <label htmlFor="area">Área</label>
-            <select id="area" name="area" value={formulario.area} onChange={alterarArea}>
+            <select
+              id="area"
+              name="area"
+              value={formulario.area}
+              onChange={alterarArea}
+            >
               {areas.map((area) => (
                 <option key={area.valor} value={area.valor}>
                   {area.rotulo}
@@ -186,7 +194,11 @@ function Gerenciar() {
             {editandoId ? "Salvar alterações" : "Cadastrar"}
           </button>
           {editandoId ? (
-            <button className="botao botao-secundario" type="button" onClick={limpar}>
+            <button
+              className="botao botao-secundario"
+              type="button"
+              onClick={limpar}
+            >
               Cancelar
             </button>
           ) : null}
@@ -222,7 +234,7 @@ function Gerenciar() {
                     <button
                       className="botao-texto botao-perigo"
                       type="button"
-                      onClick={() => apagar(disciplina)}
+                      onClick={() => setParaApagar(disciplina)}
                     >
                       Apagar
                     </button>
@@ -233,6 +245,17 @@ function Gerenciar() {
           )}
         </div>
       )}
+
+      {paraApagar ? (
+        <Confirmacao
+          titulo="Apagar esta disciplina?"
+          mensagem={`"${paraApagar.nome}" será removida do banco e sairá do portal. Esta ação não pode ser desfeita.`}
+          rotuloConfirmar="Apagar"
+          perigo
+          aoConfirmar={apagar}
+          aoCancelar={() => setParaApagar(null)}
+        />
+      ) : null}
     </main>
   );
 }

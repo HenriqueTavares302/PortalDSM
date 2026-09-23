@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import MenuGerenciar from "../components/MenuGerenciar";
+import Confirmacao from "../components/Confirmacao";
 import useAuth from "../hooks/useAuth";
 import {
   listarAlunos,
@@ -22,11 +23,10 @@ function GerenciarAlunos() {
   const [editandoId, setEditandoId] = useState(null);
   const [carregando, setCarregando] = useState(true);
   const [mensagem, setMensagem] = useState(null);
+  const [paraApagar, setParaApagar] = useState(null);
 
-  // Coordenador cria e edita, mas não apaga
   const { podeApagar } = useAuth();
 
-  // Carga inicial da lista
   useEffect(() => {
     listarAlunos()
       .then((dados) => setAlunos(dados))
@@ -34,7 +34,6 @@ function GerenciarAlunos() {
       .finally(() => setCarregando(false));
   }, []);
 
-  // Recarrega a lista depois de cadastrar, editar ou apagar
   async function carregar() {
     const dados = await listarAlunos();
     setAlunos(dados);
@@ -54,7 +53,6 @@ function GerenciarAlunos() {
     evento.preventDefault();
     setMensagem(null);
 
-    // O banco aceita foto nula; o campo vazio do formulário vira null
     const dados = { ...formulario, foto: formulario.foto.trim() || null };
 
     try {
@@ -84,11 +82,11 @@ function GerenciarAlunos() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  async function apagar(aluno) {
-    const confirmou = window.confirm(`Apagar "${aluno.nome}"?`);
-    if (!confirmou) return;
-
+  async function apagar() {
+    const aluno = paraApagar;
+    setParaApagar(null);
     setMensagem(null);
+
     try {
       await removerAluno(aluno.id);
       setMensagem({ tipo: "ok", texto: "Aluno removido." });
@@ -231,7 +229,7 @@ function GerenciarAlunos() {
                     <button
                       className="botao-texto botao-perigo"
                       type="button"
-                      onClick={() => apagar(aluno)}
+                      onClick={() => setParaApagar(aluno)}
                     >
                       Apagar
                     </button>
@@ -242,6 +240,17 @@ function GerenciarAlunos() {
           )}
         </div>
       )}
+
+      {paraApagar ? (
+        <Confirmacao
+          titulo="Apagar este aluno?"
+          mensagem={`"${paraApagar.nome}" será removido do banco e sairá do portal. Esta ação não pode ser desfeita.`}
+          rotuloConfirmar="Apagar"
+          perigo
+          aoConfirmar={apagar}
+          aoCancelar={() => setParaApagar(null)}
+        />
+      ) : null}
     </main>
   );
 }
