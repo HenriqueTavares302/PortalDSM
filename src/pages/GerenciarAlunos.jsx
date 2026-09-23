@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import MenuGerenciar from "../components/MenuGerenciar";
 import Confirmacao from "../components/Confirmacao";
 import useAuth from "../hooks/useAuth";
@@ -28,6 +28,8 @@ function GerenciarAlunos() {
   const [paraApagar, setParaApagar] = useState(null);
   const [arquivo, setArquivo] = useState(null);
   const [enviando, setEnviando] = useState(false);
+
+  const campoArquivo = useRef(null);
 
   const { podeApagar } = useAuth();
 
@@ -206,10 +208,27 @@ function GerenciarAlunos() {
           ) : null}
           <input
             id="foto"
+            className="arquivo-input"
             type="file"
             accept="image/jpeg,image/png,image/webp"
+            ref={campoArquivo}
             onChange={(evento) => setArquivo(evento.target.files[0] ?? null)}
           />
+
+          <div className="arquivo">
+            <button
+              type="button"
+              className="botao botao-secundario"
+              onClick={() => campoArquivo.current.click()}
+            >
+              {previa ? "Trocar imagem" : "Escolher imagem"}
+            </button>
+
+            <span className="arquivo-nome">
+              {arquivo ? arquivo.name : "Nenhum arquivo escolhido"}
+            </span>
+          </div>
+
           <span className="campo-ajuda">
             JPG, PNG ou WEBP, até 2 MB. Em branco, o cartão mostra as iniciais.
           </span>
