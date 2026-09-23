@@ -1,4 +1,3 @@
-// Endereço da API. Em produção isso viraria uma variável de ambiente.
 const BASE_URL = "http://localhost:3001";
 
 const CHAVE_TOKEN = "portal-dsm-token";
@@ -7,7 +6,6 @@ export const lerToken = () => localStorage.getItem(CHAVE_TOKEN);
 export const guardarToken = (token) => localStorage.setItem(CHAVE_TOKEN, token);
 export const apagarToken = () => localStorage.removeItem(CHAVE_TOKEN);
 
-// Função única que centraliza o fetch, o token, o cabeçalho JSON e o erro
 async function requisitar(caminho, opcoes = {}) {
   const token = lerToken();
 
@@ -20,12 +18,10 @@ async function requisitar(caminho, opcoes = {}) {
     },
   });
 
-  // Token expirado ou inválido: descarta para o app voltar à tela de login
   if (resposta.status === 401) {
     apagarToken();
   }
 
-  // DELETE responde 204 sem corpo
   if (resposta.status === 204) return null;
 
   const dados = await resposta.json().catch(() => null);
@@ -37,12 +33,34 @@ async function requisitar(caminho, opcoes = {}) {
   return dados;
 }
 
-// Monta a URL completa de uma foto servida pela API
 export function urlDaFoto(caminho) {
   return caminho ? `${BASE_URL}${caminho}` : null;
 }
 
-/* ---------- Autenticação ---------- */
+export async function enviarFoto(arquivo) {
+  const corpo = new FormData();
+  corpo.append("foto", arquivo);
+
+  const token = lerToken();
+
+  const resposta = await fetch(`${BASE_URL}/api/upload`, {
+    method: "POST",
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    body: corpo,
+  });
+
+  if (resposta.status === 401) {
+    apagarToken();
+  }
+
+  const dados = await resposta.json().catch(() => null);
+
+  if (!resposta.ok) {
+    throw new Error(dados?.erro ?? "Não foi possível enviar a imagem.");
+  }
+
+  return dados.caminho;
+}
 
 export const entrar = (email, senha) =>
   requisitar("/api/auth/entrar", {
@@ -56,13 +74,10 @@ export const registrar = (dados) =>
     body: JSON.stringify(dados),
   });
 
-// Rejeita antes de sair do navegador quando não há token guardado
 export const usuarioAtual = () =>
   lerToken()
     ? requisitar("/api/auth/eu")
     : Promise.reject(new Error("Sem sessão."));
-
-/* ---------- Disciplinas ---------- */
 
 export const listarDisciplinas = () => requisitar("/api/disciplinas");
 

@@ -24,6 +24,15 @@ app.use((req, res) => {
 // Tratador de erros: qualquer next(erro) dos controllers cai aqui
 app.use((erro, req, res, next) => {
   console.error(erro);
+
+  if (erro.code === "LIMIT_FILE_SIZE") {
+    return res.status(400).json({ erro: "A imagem precisa ter no máximo 2 MB." });
+  }
+
+  if (erro.message?.startsWith("Envie uma imagem")) {
+    return res.status(400).json({ erro: erro.message });
+  }
+
   res.status(500).json({ erro: "Erro interno no servidor." });
 });
 

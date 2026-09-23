@@ -4,6 +4,7 @@ import AlunoController from "../controllers/AlunoController.js";
 import AuthController from "../controllers/AuthController.js";
 import autenticar from "../middlewares/autenticar.js";
 import autorizar from "../middlewares/autorizar.js";
+import upload from "../middlewares/upload.js";
 
 const rotas = Router();
 
@@ -29,5 +30,11 @@ rotas.get("/alunos/:id", autenticar, AlunoController.buscarPorId);
 rotas.post("/alunos", autenticar, podeEscrever, AlunoController.criar);
 rotas.put("/alunos/:id", autenticar, podeEscrever, AlunoController.atualizar);
 rotas.delete("/alunos/:id", autenticar, podeApagar, AlunoController.remover);
+rotas.post("/upload", autenticar, podeEscrever, upload.single("foto"), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ erro: "Nenhum arquivo enviado." });
+  }
+  res.status(201).json({ caminho: `/fotos/${req.file.filename}` });
+});
 
 export default rotas;

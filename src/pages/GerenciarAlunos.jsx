@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import MenuGerenciar from "../components/MenuGerenciar";
 import Confirmacao from "../components/Confirmacao";
 import useAuth from "../hooks/useAuth";
@@ -7,6 +7,8 @@ import {
   criarAluno,
   atualizarAluno,
   removerAluno,
+  enviarFoto,
+  urlDaFoto,
 } from "../services/api";
 
 const formularioVazio = {
@@ -24,6 +26,8 @@ function GerenciarAlunos() {
   const [carregando, setCarregando] = useState(true);
   const [mensagem, setMensagem] = useState(null);
   const [paraApagar, setParaApagar] = useState(null);
+  const [arquivo, setArquivo] = useState(null);
+  const [enviando, setEnviando] = useState(false);
 
   const { podeApagar } = useAuth();
 
@@ -33,6 +37,19 @@ function GerenciarAlunos() {
       .catch((erro) => setMensagem({ tipo: "erro", texto: erro.message }))
       .finally(() => setCarregando(false));
   }, []);
+
+  const previaArquivo = useMemo(
+    () => (arquivo ? URL.createObjectURL(arquivo) : null),
+    [arquivo]
+  );
+
+  useEffect(() => {
+    return () => {
+      if (previaArquivo) URL.revokeObjectURL(previaArquivo);
+    };
+  }, [previaArquivo]);
+
+  const previa = previaArquivo ?? urlDaFoto(formulario.foto);
 
   async function carregar() {
     const dados = await listarAlunos();
@@ -47,15 +64,23 @@ function GerenciarAlunos() {
   function limpar() {
     setFormulario(formularioVazio);
     setEditandoId(null);
+    setArquivo(null);
   }
 
   async function enviar(evento) {
     evento.preventDefault();
     setMensagem(null);
-
-    const dados = { ...formulario, foto: formulario.foto.trim() || null };
+    setEnviando(true);
 
     try {
+      let caminhoFoto = formulario.foto || null;
+
+      if (arquivo) {
+        caminhoFoto = await enviarFoto(arquivo);
+      }
+
+      const dados = { ...formulario, foto: caminhoFoto };
+
       if (editandoId) {
         await atualizarAluno(editandoId, dados);
         setMensagem({ tipo: "ok", texto: "Aluno atualizado." });
@@ -63,15 +88,19 @@ function GerenciarAlunos() {
         await criarAluno(dados);
         setMensagem({ tipo: "ok", texto: "Aluno cadastrado." });
       }
+
       limpar();
       await carregar();
     } catch (erro) {
       setMensagem({ tipo: "erro", texto: erro.message });
+    } finally {
+      setEnviando(false);
     }
   }
 
   function editar(aluno) {
     setEditandoId(aluno.id);
+    setArquivo(null);
     setFormulario({
       nome: aluno.nome,
       papel: aluno.papel,
@@ -172,23 +201,27 @@ function GerenciarAlunos() {
 
         <div className="campo">
           <label htmlFor="foto">Foto (opcional)</label>
+          {previa ? (
+            <img className="card-foto" src={previa} alt="Prévia da foto" />
+          ) : null}
           <input
             id="foto"
-            name="foto"
-            value={formulario.foto}
-            onChange={alterarCampo}
-            placeholder="/fotos/henrique.jpg"
-            maxLength={200}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            onChange={(evento) => setArquivo(evento.target.files[0] ?? null)}
           />
           <span className="campo-ajuda">
-            Caminho de um arquivo dentro de server/public. Em branco, o cartão
-            mostra as iniciais.
+            JPG, PNG ou WEBP, até 2 MB. Em branco, o cartão mostra as iniciais.
           </span>
         </div>
 
         <div className="acoes">
-          <button className="botao" type="submit">
-            {editandoId ? "Salvar alterações" : "Cadastrar"}
+          <button className="botao" type="submit" disabled={enviando}>
+            {enviando
+              ? "Salvando..."
+              : editandoId
+                ? "Salvar alterações"
+                : "Cadastrar"}
           </button>
           {editandoId ? (
             <button
