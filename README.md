@@ -254,6 +254,19 @@ npm run build
 
 Ambos devem terminar sem mensagens de erro.
 
+## Testes
+
+Os testes da API usam Vitest e Supertest e não precisam do MySQL: o acesso ao
+banco é simulado.
+
+```bash
+cd server
+npm test
+```
+
+Cobrem a regra dos códigos de convite e as permissões das rotas de cadastro e
+de exclusão.
+
 ## Limitações conhecidas
 
 - Não há upload de imagem: o campo de foto recebe o caminho de um arquivo já
