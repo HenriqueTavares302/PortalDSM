@@ -267,6 +267,8 @@ npm test
 Cobrem a regra dos códigos de convite e as permissões das rotas de cadastro e
 de exclusão.
 
+![Saída do npm test: 2 arquivos e 17 testes aprovados](docs/img/testes.png)
+
 ## Limitações conhecidas
 
 - Não há upload de imagem: o campo de foto recebe o caminho de um arquivo já
