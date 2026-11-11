@@ -24,7 +24,8 @@ const AuthController = {
           .json({ erro: "Nome, e-mail, senha e perfil são obrigatórios." });
       }
 
-      if (senha.length < 8) {
+      // Senha numérica não tem .length e quebraria o bcrypt
+      if (typeof senha !== "string" || senha.length < 8) {
         return res
           .status(400)
           .json({ erro: "A senha precisa ter pelo menos 8 caracteres." });

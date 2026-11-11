@@ -146,4 +146,19 @@ describe("POST /api/auth/registrar", () => {
     expect(resposta.status).toBe(400);
     expect(UsuarioModel.criar).not.toHaveBeenCalled();
   });
+
+  // Número não tem .length, então passaria pela checagem de tamanho
+  it("recusa senha numérica com 400", async () => {
+    UsuarioModel.buscarPorEmail.mockResolvedValue(null);
+
+    const resposta = await request(app).post("/api/auth/registrar").send({
+      nome: "Aluno",
+      email: "aluno@fatec.sp.gov.br",
+      senha: 12345678,
+      papel: "aluno",
+    });
+
+    expect(resposta.status).toBe(400);
+    expect(UsuarioModel.criar).not.toHaveBeenCalled();
+  });
 });
